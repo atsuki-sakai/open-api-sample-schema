@@ -1,23 +1,30 @@
-Dify Custom Tool OpenAPI スキーマガイド
-目次
+# Dify Custom Tool OpenAPI スキーマガイド
 
-概要
-基本構造
-詳細仕様
-実装例
-セキュリティ考慮事項
-トラブルシューティング
+## 目次
+- [概要](#概要)
+- [基本構造](#基本構造)
+- [詳細仕様](#詳細仕様)
+- [実装例](#実装例)
+- [セキュリティ考慮事項](#セキュリティ考慮事項)
+- [トラブルシューティング](#トラブルシューティング)
 
-概要
+## 概要
+
 このガイドでは、Difyプラットフォーム用のカスタムツールを開発する際のOpenAPI 3.1.0スキーマの詳細な仕様を解説します。
-基本構造
+
+## 基本構造
+
 OpenAPIスキーマの基本構造は以下のセクションで構成されています：
-1. バージョンと基本情報
-yamlCopyopenapi: "3.1.0"
+
+### 1. バージョンと基本情報
+
+```yaml
+openapi: "3.1.0"
 info:
   title: "Custom Tool API"
   description: "Difyプラットフォーム用カスタムツール"
   version: "1.0.0"
+基本情報の説明：
 
 openapi: OpenAPI仕様のバージョン（必須）
 info: APIの基本情報を含むセクション（必須）
@@ -34,6 +41,7 @@ yamlCopyservers:
     description: "本番環境"
   - url: "https://staging-api.example.com/v1"
     description: "ステージング環境"
+サーバー設定の説明：
 
 servers: APIサーバーの接続情報
 
@@ -53,6 +61,7 @@ yamlCopypaths:
         - name: "city"
           in: "path"
           required: true
+パス定義の説明：
 
 paths: 利用可能なエンドポイントを定義
 operationId: 操作の一意識別子（必須）
@@ -70,6 +79,7 @@ yamlCopycomponents:
     apiKeyAuth:
       type: "apiKey"
       in: "header"
+コンポーネントの説明：
 
 schemas: 再利用可能なデータモデル
 securitySchemes: 認証方式の定義
@@ -93,6 +103,7 @@ yamlCopy/users:
 1. 認証設定
 yamlCopysecurity:
   - apiKeyAuth: []
+認証設定のポイント：
 
 API全体のセキュリティ要件を定義
 個別エンドポイントでオーバーライド可能
@@ -109,41 +120,33 @@ yamlCopycomponents:
           format: "email"
 トラブルシューティング
 よくあるエラー
-
-スキーマ検証エラー
-
+1. スキーマ検証エラー
 yamlCopy# 誤った例
 openapi: 3.1.0  # クォートなし
+
 # 正しい例
 openapi: "3.1.0"  # クォートあり
-
-必須フィールドの欠落
-
+2. 必須フィールドの欠落
 yamlCopy# 誤った例
 info:
   description: "説明"
+
 # 正しい例
 info:
   title: "API名"  # titleは必須
   description: "説明"
 推奨プラクティス
-
-バージョニング
-
+1. バージョニング
 
 セマンティックバージョニングの使用
 下位互換性の維持
 
-
-ドキュメント
-
+2. ドキュメント
 
 詳細な説明の提供
 使用例の記載
 
-
-エラーハンドリング
-
+3. エラーハンドリング
 
 標準的なHTTPステータスコードの使用
 明確なエラーメッセージの定義
@@ -153,4 +156,5 @@ info:
 OpenAPI公式ドキュメント
 Difyドキュメント
 
-このガイドは継続的に更新されます。最新の情報は公式ドキュメントを参照してください。 CopyRetryClaude does not have internet access. Links provided may not be accurate or up to date.
+
+このガイドは継続的に更新されます。最新の情報は公式ドキュメントを参照してください。
