@@ -1,0 +1,204 @@
+openapi: 3.1.0
+info:
+  title: ブログAPI
+  description: シンプルなブログ投稿システムのAPI
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+
+servers:
+  - url: https://api.example.com/v1
+    description: 本番環境
+  - url: https://staging-api.example.com/v1
+    description: ステージング環境
+
+paths:
+  /posts:
+    get:
+      summary: ブログ投稿一覧を取得
+      description: ページネーション付きでブログ投稿一覧を取得します
+      parameters:
+        - name: page
+          in: query
+          description: ページ番号
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: 1ページあたりの表示件数
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostList'
+        '400':
+          description: 不正なリクエスト
+          
+    post:
+      summary: 新規ブログ投稿を作成
+      description: 新しいブログ投稿を作成します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostInput'
+      responses:
+        '201':
+          description: 作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          description: 不正なリクエスト
+        '401':
+          description: 認証エラー
+
+  /posts/{postId}:
+    get:
+      summary: 特定のブログ投稿を取得
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          description: 投稿ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '404':
+          description: 投稿が見つかりません
+
+    put:
+      summary: ブログ投稿を更新
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          description: 投稿ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostInput'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '404':
+          description: 投稿が見つかりません
+
+    delete:
+      summary: ブログ投稿を削除
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          description: 投稿ID
+          schema:
+            type: string
+      responses:
+        '204':
+          description: 削除成功
+        '404':
+          description: 投稿が見つかりません
+
+components:
+  schemas:
+    Post:
+      type: object
+      required:
+        - id
+        - title
+        - content
+        - authorId
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: 投稿の一意識別子
+        title:
+          type: string
+          description: 投稿のタイトル
+        content:
+          type: string
+          description: 投稿の本文
+        authorId:
+          type: string
+          format: uuid
+          description: 投稿者のID
+        createdAt:
+          type: string
+          format: date-time
+          description: 作成日時
+        updatedAt:
+          type: string
+          format: date-time
+          description: 更新日時
+
+    PostInput:
+      type: object
+      required:
+        - title
+        - content
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: 投稿のタイトル
+        content:
+          type: string
+          minLength: 1
+          description: 投稿の本文
+
+    PostList:
+      type: object
+      required:
+        - items
+        - total
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Post'
+        total:
+          type: integer
+          description: 全投稿数
+        page:
+          type: integer
+          description: 現在のページ番号
+        totalPages:
+          type: integer
+          description: 総ページ数
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
