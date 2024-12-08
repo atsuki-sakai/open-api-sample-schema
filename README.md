@@ -1,102 +1,156 @@
-# Dify Custom Tool 開発ガイド
+Dify Custom Tool OpenAPI スキーマガイド
+目次
 
-## 概要
-このリポジトリは、Difyプラットフォームで使用するカスタムツールの開発テンプレートとガイドラインを提供します。カスタムツールを使用することで、AIアプリケーションの機能を拡張し、外部APIとの連携を実現することができます。
+概要
+基本構造
+詳細仕様
+実装例
+セキュリティ考慮事項
+トラブルシューティング
 
-## 前提条件
-- Difyアカウント
-- OpenAPI 3.1.0の基本的な理解
-- REST APIの基本的な知識
+概要
+このガイドでは、Difyプラットフォーム用のカスタムツールを開発する際のOpenAPI 3.1.0スキーマの詳細な仕様を解説します。
+基本構造
+OpenAPIスキーマの基本構造は以下のセクションで構成されています：
+1. バージョンと基本情報
+yamlCopyopenapi: "3.1.0"
+info:
+  title: "Custom Tool API"
+  description: "Difyプラットフォーム用カスタムツール"
+  version: "1.0.0"
 
-## ファイル構成
-```
-.
-├── README.md
-├── schema.json        # OpenAPIスキーマ定義
-├── examples/          # 使用例のサンプル
-└── docs/             # 詳細なドキュメント
-```
+openapi: OpenAPI仕様のバージョン（必須）
+info: APIの基本情報を含むセクション（必須）
 
-## スキーマの作成手順
+title: API名（必須）
+description: API概要
+version: APIバージョン（必須）
 
-### 1. 基本構造の定義
-```json
-{
-  "openapi": "3.1.0",
-  "info": {
-    "title": "Your API Title",
-    "description": "API description",
-    "version": "v1.0.0"
-  }
-}
-```
 
-### 2. サーバー情報の追加
-```json
-{
-  "servers": [
-    {
-      "url": "https://your-api-endpoint.com"
-    }
-  ]
-}
-```
 
-### 3. エンドポイントの定義
-- 各エンドポイントには一意の`operationId`が必要です
-- パラメータとレスポンスを明確に定義してください
-- 認証情報が必要な場合は、セキュリティスキーマを定義してください
+2. サーバー設定
+yamlCopyservers:
+  - url: "https://api.example.com/v1"
+    description: "本番環境"
+  - url: "https://staging-api.example.com/v1"
+    description: "ステージング環境"
 
-## 実装のベストプラクティス
+servers: APIサーバーの接続情報
 
-### 命名規則
-- `operationId`: キャメルケース（例：`getWeatherForecast`）
-- パラメータ名: キャメルケース
-- スキーマ名: パスカルケース（例：`WeatherForecast`）
+url: エンドポイントのベースURL
+description: 環境の説明
 
-### セキュリティ考慮事項
-- 機密情報は環境変数として管理
-- 適切な認証メカニズムの実装
-- レート制限の考慮
 
-### エラーハンドリング
-- 明確なエラーレスポンスの定義
-- 適切なHTTPステータスコードの使用
-- エラーメッセージの標準化
 
-## Difyでの設定手順
+詳細仕様
+1. パス定義
+yamlCopypaths:
+  /weather/{city}:
+    get:
+      operationId: "getWeatherForecast"
+      summary: "天気予報取得"
+      parameters:
+        - name: "city"
+          in: "path"
+          required: true
 
-1. カスタムツールの作成
-   - Difyダッシュボードにアクセス
-   - 「Tools」セクションを選択
-   - 「Create Custom Tool」をクリック
+paths: 利用可能なエンドポイントを定義
+operationId: 操作の一意識別子（必須）
+parameters: リクエストパラメータの定義
 
-2. スキーマのアップロード
-   - 作成したOpenAPIスキーマをアップロード
-   - 必要な認証情報を設定
+2. コンポーネント
+yamlCopycomponents:
+  schemas:
+    WeatherForecast:
+      type: "object"
+      properties:
+        temperature:
+          type: "number"
+  securitySchemes:
+    apiKeyAuth:
+      type: "apiKey"
+      in: "header"
 
-3. テストと検証
-   - 各エンドポイントのテスト実行
-   - レスポンスの確認
-   - エラーケースの検証
+schemas: 再利用可能なデータモデル
+securitySchemes: 認証方式の定義
 
-## トラブルシューティング
+実装例
+基本的なエンドポイント定義
+yamlCopy/users:
+  get:
+    operationId: "getUsers"
+    summary: "ユーザー一覧取得"
+    responses:
+      '200':
+        description: "成功"
+        content:
+          application/json:
+            schema:
+              type: "array"
+              items:
+                $ref: "#/components/schemas/User"
+セキュリティ考慮事項
+1. 認証設定
+yamlCopysecurity:
+  - apiKeyAuth: []
 
-### 一般的な問題と解決方法
-1. スキーマ検証エラー
-   - 構文の確認
-   - 必須フィールドの確認
-   - バージョンの互換性確認
+API全体のセキュリティ要件を定義
+個別エンドポイントでオーバーライド可能
 
-2. 認証エラー
-   - 認証情報の確認
-   - スコープの設定確認
-   - トークンの有効期限確認
+2. データ検証
+yamlCopycomponents:
+  schemas:
+    User:
+      required:
+        - id
+        - email
+      properties:
+        email:
+          format: "email"
+トラブルシューティング
+よくあるエラー
 
-## サポートとリソース
-- [Dify公式ドキュメント](https://docs.dify.ai)
-- [OpenAPI仕様](https://swagger.io/specification/)
-- [コミュニティフォーラム](https://community.dify.ai)
+スキーマ検証エラー
 
-## ライセンス
-このプロジェクトはMITライセンスの下で公開されています。詳細は`LICENSE`ファイルを参照してください。
+yamlCopy# 誤った例
+openapi: 3.1.0  # クォートなし
+# 正しい例
+openapi: "3.1.0"  # クォートあり
+
+必須フィールドの欠落
+
+yamlCopy# 誤った例
+info:
+  description: "説明"
+# 正しい例
+info:
+  title: "API名"  # titleは必須
+  description: "説明"
+推奨プラクティス
+
+バージョニング
+
+
+セマンティックバージョニングの使用
+下位互換性の維持
+
+
+ドキュメント
+
+
+詳細な説明の提供
+使用例の記載
+
+
+エラーハンドリング
+
+
+標準的なHTTPステータスコードの使用
+明確なエラーメッセージの定義
+
+関連リソース
+
+OpenAPI公式ドキュメント
+Difyドキュメント
+
+このガイドは継続的に更新されます。最新の情報は公式ドキュメントを参照してください。 CopyRetryClaude does not have internet access. Links provided may not be accurate or up to date.
