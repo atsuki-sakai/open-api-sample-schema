@@ -16,7 +16,7 @@
 
 OpenAPIスキーマの基本構造は以下のセクションで構成されています：
 
-### 1. バージョンと基本情報
+1. バージョンと基本情報
 
 yamlファイルの場合
 ```
@@ -56,7 +56,7 @@ description: 環境の説明
 
 
 
-詳細仕様
+## 詳細仕様
 1. パス定義
 ```
 yamlCopypaths:
@@ -95,7 +95,7 @@ yamlCopycomponents:
 schemas: 再利用可能なデータモデル
 securitySchemes: 認証方式の定義
 
-実装例
+## 実装例
 基本的なエンドポイント定義
 ```
 yamlCopy/users:
@@ -112,7 +112,7 @@ yamlCopy/users:
               items:
                 $ref: "#/components/schemas/User"
 ```
-セキュリティ考慮事項
+## セキュリティ考慮事項
 1. 認証設定
 ```
 yamlCopysecurity:
@@ -135,7 +135,7 @@ yamlCopycomponents:
         email:
           format: "email"
 ```
-トラブルシューティング
+## トラブルシューティング
 よくあるエラー
 1. スキーマ検証エラー
 ```
@@ -143,7 +143,7 @@ yamlCopy# 誤った例
 openapi: 3.1.0  # クォートなし
 ```
 
-# 正しい例
+正しい例
 ```
 openapi: "3.1.0"  # クォートあり
 ```
@@ -154,7 +154,7 @@ info:
   description: "説明"
 ```
 
-# 正しい例
+正しい例
 ```
 info:
   title: "API名"  # titleは必須
