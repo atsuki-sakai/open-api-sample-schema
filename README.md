@@ -18,12 +18,15 @@ OpenAPIスキーマの基本構造は以下のセクションで構成されて�
 
 ### 1. バージョンと基本情報
 
-```yaml
+yamlファイルの場合
+```
 openapi: "3.1.0"
 info:
   title: "Custom Tool API"
   description: "Difyプラットフォーム用カスタムツール"
   version: "1.0.0"
+```
+
 基本情報の説明：
 
 openapi: OpenAPI仕様のバージョン（必須）
@@ -36,11 +39,14 @@ version: APIバージョン（必須）
 
 
 2. サーバー設定
+
+```
 yamlCopyservers:
   - url: "https://api.example.com/v1"
     description: "本番環境"
   - url: "https://staging-api.example.com/v1"
     description: "ステージング環境"
+```
 サーバー設定の説明：
 
 servers: APIサーバーの接続情報
@@ -52,6 +58,7 @@ description: 環境の説明
 
 詳細仕様
 1. パス定義
+```
 yamlCopypaths:
   /weather/{city}:
     get:
@@ -61,6 +68,7 @@ yamlCopypaths:
         - name: "city"
           in: "path"
           required: true
+```
 パス定義の説明：
 
 paths: 利用可能なエンドポイントを定義
@@ -68,6 +76,7 @@ operationId: 操作の一意識別子（必須）
 parameters: リクエストパラメータの定義
 
 2. コンポーネント
+```
 yamlCopycomponents:
   schemas:
     WeatherForecast:
@@ -79,6 +88,8 @@ yamlCopycomponents:
     apiKeyAuth:
       type: "apiKey"
       in: "header"
+```
+
 コンポーネントの説明：
 
 schemas: 再利用可能なデータモデル
@@ -86,6 +97,7 @@ securitySchemes: 認証方式の定義
 
 実装例
 基本的なエンドポイント定義
+```
 yamlCopy/users:
   get:
     operationId: "getUsers"
@@ -99,16 +111,20 @@ yamlCopy/users:
               type: "array"
               items:
                 $ref: "#/components/schemas/User"
+```
 セキュリティ考慮事項
 1. 認証設定
+```
 yamlCopysecurity:
   - apiKeyAuth: []
+```
 認証設定のポイント：
 
 API全体のセキュリティ要件を定義
 個別エンドポイントでオーバーライド可能
 
 2. データ検証
+```
 yamlCopycomponents:
   schemas:
     User:
@@ -118,23 +134,32 @@ yamlCopycomponents:
       properties:
         email:
           format: "email"
+```
 トラブルシューティング
 よくあるエラー
 1. スキーマ検証エラー
+```
 yamlCopy# 誤った例
 openapi: 3.1.0  # クォートなし
+```
 
 # 正しい例
+```
 openapi: "3.1.0"  # クォートあり
+```
 2. 必須フィールドの欠落
+```
 yamlCopy# 誤った例
 info:
   description: "説明"
+```
 
 # 正しい例
+```
 info:
   title: "API名"  # titleは必須
   description: "説明"
+```
 推奨プラクティス
 1. バージョニング
 
